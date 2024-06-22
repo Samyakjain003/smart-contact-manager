@@ -9,7 +9,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.samyakj820.smart_contact_manager.entities.User;
 import com.samyakj820.smart_contact_manager.forms.UserForm;
+import com.samyakj820.smart_contact_manager.helper.Message;
+import com.samyakj820.smart_contact_manager.helper.MessageType;
 import com.samyakj820.smart_contact_manager.services.UserService;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class PageController {
@@ -56,23 +60,24 @@ public class PageController {
     }
 
     @RequestMapping(value = "/do-register", method = RequestMethod.POST)
-    public String processRegister(@ModelAttribute UserForm userForm) {
+    public String processRegister(@ModelAttribute UserForm userForm, HttpSession session) {
         System.out.println("Processing Registration");
         // fetching form data, validation, save to db
         // System.out.println(userForm);
 
-        User user = User.builder()
-            .name(userForm.getName())
-            .email(userForm.getEmail())
-            .password(userForm.getPassword())
-            .phoneNumber(userForm.getPhoneNumber())
-            .about(userForm.getAbout())
-            .profilePic("https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg?size=626&ext=jpg&ga=GA1.1.1567401352.1716903950&semt=ais_user")
-            .build();
-
+        User user = new User();
+        user.setName(userForm.getName());
+        user.setEmail(userForm.getEmail());
+        user.setPassword(userForm.getPassword());
+        user.setPhoneNumber(userForm.getPhoneNumber());
+        user.setAbout(userForm.getAbout());
+        user.setProfilePic("https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg?size=626&ext=jpg&ga=GA1.1.1567401352.1716903950&semt=ais_user");
+        
         userService.saveUser(user);
         System.out.println("User saved!!");
 
+        Message message = Message.builder().content("Registration Successful!!").type(MessageType.green).build();
+        session.setAttribute("message", message);
 
         return "redirect:/register";
     }
