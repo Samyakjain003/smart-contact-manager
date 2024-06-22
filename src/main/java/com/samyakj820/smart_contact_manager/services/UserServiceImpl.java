@@ -1,13 +1,17 @@
 package com.samyakj820.smart_contact_manager.services;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.samyakj820.smart_contact_manager.entities.User;
+import com.samyakj820.smart_contact_manager.helper.AppConstants;
 import com.samyakj820.smart_contact_manager.helper.ResourceNotFoundException;
 import com.samyakj820.smart_contact_manager.respositories.UserRepository;
 
@@ -20,9 +24,14 @@ public class UserServiceImpl implements UserService{
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public User saveUser(User user) {
         user.setUserId(UUID.randomUUID().toString());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRoleList(Arrays.asList(AppConstants.ROLE_USER));
         return userRepository.save(user);
     }
 

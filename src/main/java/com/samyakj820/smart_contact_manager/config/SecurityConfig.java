@@ -1,28 +1,33 @@
 package com.samyakj820.smart_contact_manager.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.samyakj820.smart_contact_manager.services.SecurityCustomUserDetailService;
 
 @Configuration
 public class SecurityConfig {
 
-    
+    @Autowired
+    private SecurityCustomUserDetailService userDetailService;
+
     @Bean
-    public UserDetailsService UserDetailService() {
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
 
-        UserDetails user1 = User
-            .withDefaultPasswordEncoder()
-            .username("admin123")
-            .password("admin123")
-            .roles("ADMIN", "USER")
-            .build();
+        daoAuthenticationProvider.setUserDetailsService(userDetailService);
+        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
 
-        var inMemoryUserDetailsManager = new InMemoryUserDetailsManager(user1);
-        return inMemoryUserDetailsManager;
+        return daoAuthenticationProvider;
     }
 
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }
