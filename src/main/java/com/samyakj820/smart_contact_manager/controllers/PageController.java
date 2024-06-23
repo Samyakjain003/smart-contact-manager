@@ -16,12 +16,20 @@ import com.samyakj820.smart_contact_manager.services.UserService;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.GetMapping;
+
 
 @Controller
 public class PageController {
 
     @Autowired
     private UserService userService;
+
+    @GetMapping("/")
+    public String index() {
+        return "redirect:/home";
+    }
+    
 
     @RequestMapping("/home")
     public String home(){
